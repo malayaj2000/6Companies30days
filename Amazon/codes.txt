@@ -1,0 +1,492 @@
+*****************************************************1***************************************************
+int maxProfit(int K, int N, int A[]) {
+        
+        vector<vector<int>> dp(K+1,vector<int>(N,0));
+        
+        for(int k= 1;k<K+1;k++){
+            int mx = dp[k-1][0] - A[0];
+            for(int n =1;n<N;n++){
+                dp[k][n] = max(dp[k][n-1],mx+A[n]);
+                
+                mx = max(mx,dp[k-1][n] - A[n]);
+            }
+        }
+        return dp[K][N-1];
+    }
+
+*******************************************************2*****************************************************
+int longestMountain(vector<int>& arr) {
+        int n = arr.size();
+        vector<int> t1(n,0);
+        vector<int> t2(n,0);
+        for(int i = 1,j=n-2;i<n,j>=0;i++,j--){
+            
+            if(arr[i-1]<arr[i]){
+                t1[i] = t1[i-1]+1;
+            }
+            if(arr[j+1]<arr[j]){
+                t2[j] = t2[j+1]+1;
+            }
+        }
+        int mx = 0;
+        for(int i = 0;i<n;i++){
+            if(t1[i]!=0 and t2[i]!=0){
+                mx = max(mx,t1[i]+t2[i]+1);
+            }
+        }
+        
+        return mx;
+    }
+*****************************************************3*****************************************************
+vector<int> max_of_subarrays(vector<int> arr, int n, int k) {
+        
+        deque<int> q;
+        vector<int> ans;
+        for(int i = 0;i<n;i++){
+            
+            while(!q.empty() and q.front()<i-k+1) q.pop_front();
+            
+            while(!q.empty() and arr[q.back()]<arr[i]) q.pop_back();
+            
+            q.push_back(i);
+            
+            if(i>=k-1){
+                ans.push_back(arr[q.front()]);
+            }
+        }
+        
+        return ans;
+    }
+**********************************************************4**************************************************
+void putBrackets(int i,int j,vector<vector<int>> &optimalBracket,int n,char &ch,string &s){
+        if(i>=j){
+            s += ch;
+            ch++;
+            return ;
+        }
+        s += '(';
+        
+        putBrackets(i,optimalBracket[i][j],optimalBracket,n,ch,s);
+        putBrackets(optimalBracket[i][j]+1,j,optimalBracket,n,ch,s);
+        
+        s+= ')';
+    }
+    int solve(int p[],int n,int i,int j,vector<vector<int>> &dp,vector<vector<int>> &optimalBracket){
+        
+        if(i>=j) return 0;
+        
+        if(dp[i][j]!=-1) return dp[i][j];
+        
+        int ans = INT_MAX;
+        for(int k = i;k<j;k++){
+            int temp = solve(p,n,i,k,dp,optimalBracket) + solve(p,n,k+1,j,dp,optimalBracket) + p[i-1]*p[k]*p[j];
+            
+            if(temp<ans){
+                ans = temp;
+                optimalBracket[i][j] = k;
+            }
+        }
+        
+        return dp[i][j] = ans;
+        
+    }
+    string matrixChainOrder(int p[], int n){
+        vector<vector<int>> dp(n,vector<int>(n,-1));
+        vector<vector<int>> optimalBracket(n,vector<int>(n));
+        solve(p,n,1,n-1,dp,optimalBracket);
+        string s = "";
+        char ch = 'A';
+        putBrackets(1,n-1,optimalBracket,n,ch,s);
+        return s;
+    }
+
+***********************************************************5************************************************
+vector<vector<string>> displayContacts(int n, string contact[], string s)
+    {
+        // code here
+        int qStrSize = s.size();
+        int dictSize = n;
+        set<string> searchSpace;
+        for(int i = 0;i<dictSize;i++){
+            searchSpace.insert(contact[i]);
+        }
+        unordered_set<string> discardedWord;
+        vector<vector<string>> ans(qStrSize);
+        for(int i = 0;i<qStrSize;i++){
+            //cout<<i<<endl;
+            int count = 0;
+           for(auto word:searchSpace){
+               //cout<<word<<endl;
+               if(discardedWord.find(word) == discardedWord.end() and word[i]==s[i]){
+                   count++;
+                   ans[i].push_back(word);
+               }
+               else{
+                   //cout<<"executed"<<endl;
+                  discardedWord.insert(word);
+               }
+           }
+           if(!count){
+               ans[i].push_back("0");
+           }
+        }
+        
+        //printmatrix(ans);
+        return ans;
+    }
+*********************************************************************6****************************************************************************
+vector <int> max_of_subarrays(int *arr, int n, int k)
+    {
+        // your code here
+        deque<int> q;
+        vector<int> ans;
+        for(int i = 0;i<n;i++){
+            
+            while(!q.empty() and q.front()<i-k+1) q.pop_front();
+            while(!q.empty() and arr[q.back()]<arr[i]) q.pop_back();
+            
+            q.push_back(i);
+            
+            if(i>=k-1){
+                ans.push_back(arr[q.front()]);
+            }
+        }
+        
+        return ans;
+    }
+********************************************************************7*********************************************************************************
+string FirstNonRepeating(string A){
+		    // Code here
+		    deque<char> q;
+		    
+		    unordered_map<char,int> mp;
+		    
+		    string s = "";
+		    int  n = A.size();
+		    for(int i = 0;i<n;i++){
+		        
+		        
+		        if(q.empty() and mp[A[i]]==0){
+		            q.push_back(A[i]);
+		        }
+		        else{
+		            
+		            while(!q.empty() and (q.front()==A[i] or mp[q.front()]>1)) q.pop_front();
+		            
+		            if(mp[A[i]]==0) q.push_back(A[i]);
+		        }
+		        
+		        mp[A[i]]++;
+		        
+		        if(!q.empty()) s += q.front();
+		        else s += "#";
+		    }
+		    
+		    return s;
+		}
+**************************************************************************8*****************************************************************************
+int nthStair(int n){
+		    //  Code here
+		    
+		    // num of ways we can make  n using [1,2] (unbounded) ;
+		    
+		    vector<vector<int>> dp(3,vector<int>(n+1,0));
+		    
+		    
+		    for(int i  = 0;i<3;i++) dp[i][0]  = 1;
+		    
+		    for(int i = 1;i<3;i++){
+		        for(int j  =1;j<n+1;j++){
+		            if(i<=j) dp[i][j] = dp[i][j-i] + dp[i-1][j];
+		            else dp[i][j] = dp[i-1][j];
+		        }
+		    }
+		    
+		    return dp[2][n];
+		}
+**************************************************************************9******************************************************************************
+bool isValid(vector<vector<int>> &mat,int i,int j){
+        // check row
+        set<int> st;
+        for(int col = 0;col<9;col++) {
+            if(st.find(mat[i][col])!=st.end()) return 0;
+            if(mat[i][col]!=0) st.insert(mat[i][col]); 
+        }
+        st.clear();
+        
+        // check col 
+        for(int row = 0;row<9;row++) {
+            if(st.find(mat[row][j])!=st.end()) return 0;
+            if(mat[row][j]!=0) st.insert(mat[row][j]); 
+        }
+        st.clear();
+        
+        // check Box
+        int st_row = i - i%3;
+        int st_col = j - j%3;
+        for(int row = 0;row<3;row++){
+            for(int col = 0;col<3;col++){
+                if(st.find(mat[row+st_row][col+st_col])!=st.end()) return 0;
+                if(mat[row+st_row][col+st_col]!=0){
+                    st.insert(mat[row+st_row][col+st_col]);
+                }
+            }
+        }
+        
+        return 1;
+        
+        
+        
+    }
+    bool solve(vector<vector<int>> &mat){        
+        for(int i = 0;i<9;i++){
+            for(int j = 0;j<9;j++){
+            
+                if(!isValid(mat,i,j)) return 0;
+            }
+        }
+        return 1;
+        
+    }
+    int isValid(vector<vector<int>> mat){
+        // code here
+        return solve(mat);
+    }
+
+********************************************************************************10************************************************************************
+void merge(char arr[],int n,int l,int m,int h,unordered_map<char,int> &mp){
+        int n1 = m-l+1;
+        int n2 = h-m;
+        char *temp = new char[n1+n2];
+        
+        int k = 0;
+        int i = l;
+        int j = m+1;
+        while(i<m+1 and j<h+1){
+            
+            if(mp[arr[i]]<mp[arr[j]]){
+                temp[k++] = arr[i++];
+            }
+            else{
+                temp[k++] = arr[j++];
+            }
+        }
+        
+        while(i<m+1){
+            temp[k++] = arr[i++];
+        }
+        while(j<h+1){
+            temp[k++] = arr[j++];
+        }
+        for(int iter = 0;iter<n1+n2;iter++){
+            arr[l+iter]  = temp[iter];
+        }
+        
+    }
+    void mergeSort(char arr[],int n,int l,int h,unordered_map<char,int> &mp){
+        
+        if(l<h){
+            int m =(l+h)/2;
+            mergeSort(arr,n,l,m,mp);
+            mergeSort(arr,n,m+1,h,mp);
+            merge(arr,n,l,m,h,mp);
+        }
+    }
+	void matchPairs(char nuts[], char bolts[], int n) {
+	    // code here
+	     
+	    unordered_map<char,int> mp;
+	    string s = "!#$%&*@^~";
+	    for(int i = 0;i<s.size();i++){
+	        mp[s[i]] = i;
+	    }
+	    
+	    mergeSort(nuts,n,0,n-1,mp);
+	    //mergeSort(bolts,n,0,n-1);
+	    for(int i = 0;i<n;i++){
+	        bolts[i] =  nuts[i];
+	    }
+	}
+********************************************************************11***********************************************************************************
+vector<int> serialize(Node *root) 
+    {
+      vector<int> arr;
+      queue<Node*> q;
+      q.push(root);
+      while(!q.empty()){
+            
+            Node*temp = q.front();
+            q.pop();
+            
+            if(temp){
+                arr.push_back(temp->data);
+                q.push(temp->left);
+                q.push(temp->right);
+            }
+            else{
+                arr.push_back(-1);
+            }
+      }
+      //for(auto it:arr) cout<<it<<" ";
+      //cout<<endl;
+      return arr;
+    }
+    
+    //Function to deserialize a list and construct the tree.
+    Node * deSerialize(vector<int> &A)
+    {
+       //Your code here
+        Node*root = nullptr;
+        queue<Node**> q;
+        q.push(&root);
+        
+        for(int i = 0;i<A.size();i++){
+            Node* &temp = *q.front();
+            q.pop();
+            if(A[i]!=-1){
+                //cout<<A[i]<<endl;
+                temp = new Node(A[i]);
+                q.push(&temp->left);
+                q.push(&temp->right);
+            } 
+        }
+        //cout<<root->data<<endl;
+        return root;
+    }
+
+
+*********************************************************************12***********************************************************************************
+void GetColName(ll n,string &s){
+
+    if(n-1<0) return;
+
+     s += ('A' + (n-1)%26);
+    GetColName((n-1)/26,s);
+}
+
+int main()
+{
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    ll n; cin>>n;
+    vector<ll> arr(n);
+    inputvector(n,arr);
+
+    for(auto num:arr){
+        string s = "";
+        GetColName(num,s);
+        reverse(s.begin(),s.end());
+        cout<<s<<endl;
+    }
+
+
+}
+
+********************************************************************13*************************************************************************************
+int orangesRotting(vector<vector<int>>& grid) {
+        int tor = 0;
+        int count = 0;
+        int time = 0;
+        int n = grid.size();
+        int m = grid[0].size();
+        queue<pi> bfs;
+        for(int i =0;i<n;i++){
+            for(int j = 0;j<m;j++){
+                if(grid[i][j]==2){
+                    bfs.push({i,j});
+                }
+                if(grid[i][j]!=0){
+                    tor++;
+                }
+            }
+        }
+        int di[4] = {-1,1,0,0};
+        int dj[4] = {0,0,-1,1};
+        while(!bfs.empty()){
+            int k = bfs.size();
+            count+=k;
+            int i,j;
+            while(k--){
+                i = bfs.front().first;
+                j = bfs.front().second;
+                bfs.pop();
+                for(int l =0;l<4;l++){
+                    int x = i+di[l];
+                    int y = j+dj[l];
+                    if(x<0 || y<0 || x>= n || y>=m || grid[x][y]==0){continue;}
+                    else if(grid[x][y]==1){
+                        bfs.push({x,y});
+                        grid[x][y] = 2;
+                    }
+                }
+            }
+            if(bfs.size()) time++;
+        }
+     return count==tor?time:-1; 
+    }
+*******************************************************************14**************************************************************************************
+void inorder(Node*root,unordered_map<Node*,Node*> &mp,Node*&t,int key){
+        if(!root) return ;
+        
+        inorder(root->left,mp,t,key);
+        
+        if(root->left) mp[root->left] = root;
+        if(root->right) mp[root->right] = root;
+        if(root->data==key) t = root;
+        
+        inorder(root->right,mp,t,key);
+        
+    }
+    int BFS(Node*t,unordered_map<Node*,Node*> &mp){
+        queue<Node*> q;
+        q.push(t);
+        int time_count = 0;
+        unordered_set<Node*> st;
+        while(!q.empty()){
+            int n = q.size();
+            while(n--){
+                Node *temp = q.front();
+                q.pop();
+                st.insert(temp);
+                if(temp->left and st.find(temp->left )==st.end()) q.push(temp->left);
+                if(temp->right and st.find(temp->right)==st.end()) q.push(temp->right);
+                if(mp[temp] and st.find(mp[temp])==st.end()) q.push(mp[temp]);
+            }
+            time_count++;
+        }
+        
+        return time_count-1;
+    }
+    int minTime(Node* root, int target) 
+    {
+        // Your code goes here
+        unordered_map<Node*,Node*> mp;
+        Node* t = nullptr;
+        inorder(root,mp,t,target);
+        mp[root] = nullptr;
+        
+        return BFS(t,mp);
+    }
+
+*******************************************************************15*************************************************************************************
+void linkdelete(struct Node  *head, int M, int N)
+    {
+        //Add code here  
+        Node *p = head;
+        while(p){
+            int itrM = M-1; 
+            while(p and itrM--){
+                p = p->next;
+            }
+             Node *q = p;
+            int itrN = N+1;
+            while(q and itrN--){
+                q = q->next;
+            }
+            if(p and p->next) p->next = q;
+            p = q;
+        }
+    }
+*******************************************************************end***********************************************************************************
+
