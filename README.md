@@ -2,3 +2,4 @@
 #6Companies30days
 
 - [X] goldmen Sach
+- [X] Amazon
