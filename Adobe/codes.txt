@@ -1,0 +1,358 @@
+***********************************************************1*************************************************
+ public:
+    //Function to find a continuous sub-array which adds up to a given number.
+    vector<int> subarraySum(int arr[], int n, long long s)
+    {
+        // Your code here
+        vector<int> ans;
+        int i = 0;
+        int j = 0;
+        int currSum = 0;
+        bool foundAns = 0;
+        while(j<n and !foundAns){
+            currSum+=arr[j];
+            
+            while(currSum>=s and !foundAns){
+                if(currSum==s){
+                    ans.push_back(i+1);
+                    ans.push_back(j+1);
+                    foundAns = 1;
+                }
+                currSum -= arr[i];
+                i++;
+            }
+            j++;
+        }
+        
+        if(ans.size()==0) ans.push_back(-1);
+        return ans;
+    }
+
+*******************************************2******************************************************************
+ int lengthOfLongestAP(int arr[], int n) {
+        // code here
+        if(n<=2) return n;
+        vector<unordered_map<int,int>> dp(n);
+        
+        
+        int mx = 2;
+        
+        
+        for(int i = 0;i<n;i++){
+            for(int j = i+1;j<n;j++){
+                int diff = arr[j] - arr[i]; 
+                if(dp[i].find(diff)!=dp[i].end()){
+                    dp[j][diff]  =  dp[i][diff] +1;
+                }
+                else{
+                    dp[j][diff] = 2;
+                }
+                
+                mx= max(dp[j][diff],mx);
+            }
+        }
+        return mx;
+    }
+*************************************************3***********************************************************
+***************************************************4*********************************************************
+public:
+    bool f(int arr[],int n,vector<vector<int>>&t,int Tsum){
+        if(Tsum==0) return 1;
+        if(n==0) return 0;
+        if(t[n][Tsum]!=-1) return t[n][Tsum];
+        
+        if(arr[n-1]<=Tsum){
+            return t[n][Tsum] = f(arr,n-1,t,Tsum-arr[n-1])||f(arr,n-1,t,Tsum);
+        }
+        else{
+            return t[n][Tsum] = f(arr,n-1,t,Tsum);
+        }
+    }
+    int equalPartition(int N, int arr[])
+    {
+        // code here
+        int sum =0;
+        for(int i=0;i<N;i++){
+            sum+=arr[i];
+        }
+        if(sum%2!=0) return 0;
+        
+        int T = sum/2;
+        vector<vector<int>> t(N+1,vector<int>(T+1,-1));
+        for(int j=0;j<T+1;j++){
+            t[0][j]=0;
+        }
+        for(int i=0;i<N+1;i++){
+            t[i][0]=1;
+        }
+        //return f(arr,N,t,T);
+        
+        for(int i=1;i<N+1;i++){
+            for(int j=1;j<T+1;j++){
+                if(arr[i-1]<=j){
+                    t[i][j] = t[i-1][j-arr[i-1]]||t[i-1][j];
+                }
+                else{
+                    t[i][j] = t[i-1][j];
+                }
+            }
+        }
+        return t[N][T];
+    }
+*****************************************************5*******************************************************
+*****************************************************6*******************************************************
+public:
+    vector<string> ans;
+    void solve(int l,int r,string s,int c){
+        
+        if(c<0) return ;
+        if(r==0 and l==0){
+            ans.push_back(s);
+            return ;
+        }
+        if(l){
+            solve(l-1,r,s+'(',c+1);
+        }
+        if(r){
+            solve(l,r-1,s+')',c-1);
+        }
+    }
+    vector<string> AllParenthesis(int n) 
+    {
+        // Your code goes here
+        ans.clear();
+        string s = "";
+        int count  = 0;
+        solve(n,n,s,count);
+        return ans;
+    }
+***************************************************7**********************************************************
+using vec3 =  vector<vector<vector<int>>>;
+    using vec2 = vector<vector<int>>;
+    using vec1 = vector<int>;
+    int solve(vector<int>&A,int i ,int j,int p,vec3 &dp){
+        if(i==j){
+            if(p==0){
+                return A[i];
+            }
+            else{
+                return 0;
+            }
+        }
+        if(dp[i][j][p]!=-1) return dp[i][j][p];
+        
+        if(p==0){
+            return dp[i][j][p] = max(A[i] + solve(A,i+1,j,1,dp),A[j] + solve(A,i,j-1,1,dp));
+        }
+        return dp[i][j][p] = min(solve(A,i+1,j,0,dp),solve(A,i,j-1,0,dp));
+    }
+    int maxCoins(vector<int>&A,int n)
+    {
+	    //Write your code here'
+	    int  i= 0;
+	    int j = n-1;
+	    vec3 dp(n,vec2(n,vec1(2,-1)));
+	    return solve(A,i,j,0,dp);
+    }
+***************************************************8**********************************************************
+pair<int,bool> solve(string s){
+        int num = 0;
+        int n = s.size();
+        for(int i =0;i<n;i++){
+            if(s[i]-'0'>=0 and s[i]-'0'<=9) num = num*10 + (s[i]-'0');
+            else return {-1,0};
+        }
+        return {num,1};
+    }
+    int atoi(string str) {
+        //Your code here
+        if(str[0]=='-'){
+            auto ans = solve(str.substr(1));
+            if(ans.second==0) return -1;
+            else return -ans.first;
+        }
+        auto ans = solve(str);
+        if(ans.second==0) return -1;
+        else return ans.first;
+    }
+
+***************************************************9**********************************************************
+void reverse(string &s,int i,int j){
+        while(i<j){
+            swap(s[i],s[j]);
+            i++;
+            j--;
+        }
+    }
+    string nextGreater(string s){
+        int idx = -1;
+        for(int i = s.size()-2;i>=0;i--){
+            if(s[i]<s[i+1]){
+                idx = i;
+                break;
+            }
+        }
+        if(idx==-1){
+            //reverse(s,idx+1,s.size()-1);
+            return "-1";
+        }
+        int m;
+        for(int i =s.size()-1;i>=0;i--){
+            if(s[i]>s[idx]) {
+                m = i;
+                break;
+            }
+        }
+        swap(s[idx],s[m]);
+        reverse(s,idx+1,s.size()-1);
+        return s;
+    }
+    
+    string solve(string s){
+        int n = s.size();
+        string newhalfStr = nextGreater(s.substr(0,n/2));
+        if(newhalfStr=="-1") return "-1";
+        string temp = newhalfStr;
+        reverse(temp,0,temp.size()-1);
+        string ans = "";
+        if(n%2==0){
+            ans += newhalfStr + temp;
+        }
+        else{
+            ans+= newhalfStr + s[n/2] + temp;
+        }
+          return ans;
+    }
+    string nextPalin(string N) { 
+        //complete the function here
+        return solve(N);
+    }
+
+***************************************************10*********************************************************
+ vector<string> winner(string arr[],int n)
+    {
+        // Your code here
+        // Return the string containing the name and an integer
+        // representing the number of votes the winning candidate got
+        map<string,int> mp;
+        string mxStr = "";
+        int mx = 0;
+     
+        for(int i =0 ;i<n;i++){
+            mp[arr[i]]++;
+            if(mp[arr[i]]>mx){
+                mx = mp[arr[i]];
+                mxStr = arr[i];
+            }
+            else if(mp[arr[i]]==mx and lexicographical_compare(arr[i].begin(),arr[i].end(),mxStr.begin(),mxStr.end())){
+                mxStr = arr[i];
+            }
+        }
+        return  {mxStr,to_string(mx)};
+        
+    }
+***************************************************11*********************************************************
+string amendSentence (string s)
+    {
+        // your code here
+        int i = 0;
+        int n = s.size();
+        string ans = "";
+        while(i<n){
+            if(s[i]>='A' and s[i]<='Z'){
+                int start = i;
+                s[start] = 'a' + (s[start]-'A');
+                while(i<n and s[i]>='a' and s[i]<='z') {
+                    ans += s[i];
+                    i++;
+                }
+                if(i<n) ans += " ";
+            }
+            else{
+                while(i<n and s[i]>='a' and s[i]<='z') {
+                    ans += s[i];
+                    i++;
+                }
+                if(i<n) ans += " ";
+            }
+        }
+        return ans;
+    }
+***************************************************12*********************************************************
+public:
+    vector<int> leaders(int a[], int n){
+        // Code here
+        vector<int> ans;
+        int mx = a[n-1];
+        ans.push_back(mx);
+        for(int i = n-2;i>=0;i--){
+            if(a[i]>=mx){
+                mx = a[i];
+                ans.push_back(mx);
+            }
+        }
+        reverse(ans.begin(),ans.end());
+        return ans;
+    }
+***************************************************13*********************************************************
+int LIS (vector<int> &arr){
+        if(arr.size()==0) return 0;
+        vector<int> dp;
+        int n = arr.size();
+        dp.push_back(arr[0]);
+        for(int i = 1;i<n;i++){
+            if(arr[i]>dp.back()) dp.push_back(arr[i]);
+            else{
+                auto it = lower_bound(dp.begin(),dp.end(),arr[i]) - dp.begin();
+                dp[it] = arr[i];
+            }
+        }
+        
+        return dp.size();
+        
+    }
+    int minInsAndDel(int A[], int B[], int N, int M) {
+        // code here
+        vector<int> v;
+        for(int i =0;i<N;i++){
+            if(binary_search(B,B+M,A[i])){
+                v.push_back(A[i]);
+            }
+        }
+        
+        return N+M-2*LIS(v);
+    }
+***************************************************14*********************************************************
+
+***************************************************15*******************************************************
+def compareVersion(A, B):
+        A = list(map(int,A.split('.'))) 
+        B =  list(map(int,B.split('.')))  
+        nA = len(A)
+        nB = len(B)
+        i = 0
+        print(A)
+        print(B)
+        while(i<min(nA,nB)):
+            if (A[i]==B[i]): 
+                i = i + 1
+                continue
+            else:
+                if A[i]>B[i]: 
+                    return 1
+                else: 
+                    return -1
+            i = i + 1
+            
+        
+        if nA > nB :
+            if A[i]!=0:  return 1
+            return 0
+        elif nA < nB :
+            if B[i]!=0: return -1
+            return 0
+        return 0
+
+***********************************************************end ***********************************************
+
+
