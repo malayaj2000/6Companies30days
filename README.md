@@ -3,3 +3,4 @@
 
 - [X] goldmen Sach
 - [X] Amazon
+- [X] MicroSoft
