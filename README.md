@@ -4,3 +4,5 @@
 - [X] goldmen Sach
 - [X] Amazon
 - [X] MicroSoft
+- [X] adobe
+- [X] intuit
