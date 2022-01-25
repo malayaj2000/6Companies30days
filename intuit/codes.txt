@@ -86,6 +86,7 @@ void dfs(int node,vector<int> &vis,vector<vector<int>>& isConnected,int v){
         return count;
     }
 *******************************************************11****************************************************
+
 *********************************************************12*************************************************
  using graph = vector<vector<int>> ;
     void buildGraph(graph &g,vector<vector<int>> &edge){
@@ -154,6 +155,42 @@ void dfs(int node,vector<int> &vis,vector<vector<int>>& isConnected,int v){
         
     }
 ************************************************************13***********************************************
+int find(vector<int> &arr,int key,int s){
+        for(int i = s;i<arr.size();i++){
+            if(arr[i]>=key) return i;
+        }
+        return -1;
+    } 
+    int minSwaps(vector<vector<int>>& grid) {
+        vector<int> v;
+        int n = grid.size();
+        int m = grid[0].size();
+        for(int i = 0;i<n;i++){
+            int zero = 0;
+            for(int j = m-1 ;j>=0;j--){
+                if(grid[i][j]==0) zero++;
+                else break;
+            }
+            v.push_back(zero);
+        }
+        int swap  = 0;
+        for(int i = 0;i<n;i++){
+            int reqZero = m-i-1;
+            int idx = find(v,reqZero,i);
+            if(idx==-1) return -1;
+            else{
+                
+                swap += abs(i-idx);
+                int val = v[idx];
+                //cout<<swap<<" "<<idx<<endl;
+                v.erase(v.begin()+idx);
+                v.insert(v.begin()+i,val);
+                //for(auto it:v) cout<<it<<" ";
+                //cout<<endl;
+            }
+        }
+        return swap;
+    }
 ********************************************************14*************************************************
  using pii = pair<int,int> ;
     int di[4] = {0,0,1,-1};
