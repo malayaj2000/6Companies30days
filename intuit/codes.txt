@@ -1,0 +1,236 @@
+******************************************************8*******************************************************
+
+*********************************************9****************************************************************
+using pii = pair<int,int>;
+    int di[4] = {0,0,1,-1};
+    int dj[4] = {1,-1,0,0};
+    bool isSafe(int i,int j,int n,int m){
+        if(i<0 || j<0 || i>=n || j>=m) return 0;
+        return 1;
+    }
+    vector<vector<int>> pacificAtlantic(vector<vector<int>>& heights) {
+        queue<pii> q_p,q_a;
+        int n = heights.size();
+        int m = heights[0].size();
+        for(int i = 0;i<n;i++){
+            q_p.push({i,0});
+            q_a.push({i,m-1});
+        }
+        for(int j =1;j<m;j++){
+             q_p.push({0,j});
+            q_a.push({n-1,j-1});
+        }
+        vector<vector<int>> vis(n,vector<int>(m,-1));
+        
+        while(!q_p.empty()){
+            pii loc = q_p.front();
+            q_p.pop();
+            int i = loc.first;
+            int j = loc.second;
+            vis[i][j] = 1;
+            for(int dir = 0;dir<4;dir++){
+                int ni = i + di[dir];
+                int nj = j + dj[dir];
+                if(isSafe(ni,nj,n,m) and heights[ni][nj]>=heights[i][j] and vis[ni][nj]==-1){
+                    q_p.push({ni,nj});
+                }
+            }
+        }
+        
+        vector<vector<int>> ans;
+        while(!q_a.empty()){
+            
+            pii loc = q_a.front();
+            q_a.pop();
+            int i = loc.first;
+            int j = loc.second;
+            
+            if(vis[i][j]==1){
+                ans.push_back({i,j});
+            }
+            vis[i][j]=  2;
+            
+            for(int dir = 0;dir<4;dir++){
+                int ni = i + di[dir];
+                int nj = j + dj[dir];
+                if(isSafe(ni,nj,n,m) and heights[ni][nj]>=heights[i][j] and vis[ni][nj]!=2){
+                    q_a.push({ni,nj});
+                }
+            }
+            
+        }
+        
+        return ans;
+        
+    }
+*******************************************************10*****************************************************
+void dfs(int node,vector<int> &vis,vector<vector<int>>& isConnected,int v){
+        vis[node] = 1;
+        for(int child = 0;child<v;child++){
+            if(child!=node and isConnected[node][child] and !vis[child]){
+                dfs(child,vis,isConnected,v);
+            }
+        }
+    }
+    int findCircleNum(vector<vector<int>>& isConnected) {
+        int v = isConnected.size();
+        vector<int> vis(v,0);
+        int count  =0;
+        for(int i = 0;i<v;i++){
+            if(!vis[i]){
+                count++;
+                dfs(i,vis,isConnected,v);
+            }
+        }
+        
+        return count;
+    }
+*******************************************************11****************************************************
+*********************************************************12*************************************************
+ using graph = vector<vector<int>> ;
+    void buildGraph(graph &g,vector<vector<int>> &edge){
+        for(auto e:edge){
+            g[e[1]].push_back(e[0]);
+        }
+    }
+    bool iscycle(int node,graph &g,vector<int> &vis,vector<int> &dfsvis){
+        vis[node] = 1;
+        dfsvis[node] = 1;
+        for(auto child:g[node]){
+            if(!vis[child]){
+                if(iscycle(child,g,vis,dfsvis)) return 1;
+            }
+            else if(dfsvis[child]) return 1;
+        }
+        dfsvis[node] = 0;
+        
+        return 0;
+    }
+    bool containCycle(graph &g,int v){
+        vector<int> vis(v,0);
+        vector<int> dfsvis(v,0);
+        
+        for(int i = 0;i<v;i++){
+            if(iscycle(i,g,vis,dfsvis)) return 1;
+        }
+        return 0;
+    }
+    void toposort(int node,stack<int> &st,graph &g,vector<int> &vis){
+        vis[node] = 1;
+        for(auto child:g[node]){
+            if(!vis[child]) toposort(child,st,g,vis);
+        }
+        cout<<node<<endl;
+        st.push(node);
+    }
+    void solve(graph &g,stack<int> &st,int v){
+        
+        vector<int> vis(v,0);
+        for(int i = 0;i<v;i++){
+           if(!vis[i]) toposort(i,st,g,vis);
+        }
+    }
+    vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) {
+        int n  = numCourses;
+        if(n==1) return {0};
+        
+        graph g(n);
+        
+        buildGraph(g,prerequisites);
+       
+        
+        if(containCycle(g,n)) return {};
+        
+        else{
+            vector<int> ans;
+            stack<int> st;
+            solve(g,st,n);
+            while(!st.empty()){
+                ans.push_back(st.top());
+                st.pop();
+            }
+            return ans;
+        }
+        
+    }
+************************************************************13***********************************************
+********************************************************14*************************************************
+ using pii = pair<int,int> ;
+    int di[4] = {0,0,1,-1};
+    int dj[4] = {-1,1,0,0};
+    bool isSafe(int i,int j,int n,int m){
+        if(i<0 || j<0 || i>=n||j>=m) return 0;
+        return 1;
+    }
+    int maxDistance(vector<vector<int>>& grid) {
+        queue<pii> q;
+        int n = grid.size();
+        int m = grid[0].size();
+        
+        for(int i = 0;i<n;i++){
+            for(int j = 0;j<m;j++){
+                if(grid[i][j]==1) {
+                    q.push({i,j});
+                }
+            }
+        }
+        if(q.empty() || q.size()==n*m) return -1;
+        vector<vector<int>> vis(n,vector<int>(m,INT_MAX));
+        
+        while(!q.empty()){
+            int i = q.front().first;
+            int j = q.front().second;
+            q.pop();
+            if(grid[i][j]==1){
+                vis[i][j] = 0;
+            }
+            
+            for(int dir = 0;dir<4;dir++){
+                int ni = i + di[dir];
+                int nj = j + dj[dir];
+                if(isSafe(ni,nj,n,m) and vis[ni][nj]>vis[i][j]+1){
+                    vis[ni][nj] = vis[i][j]+1;
+                    q.push({ni,nj});
+                }
+            }
+            
+        }
+        int mx = INT_MIN;
+           for(int i = 0;i<n;i++){
+            for(int j = 0;j<m;j++){
+                if(grid[i][j]==0) {
+                    mx = max(mx,vis[i][j]);
+                }
+            }
+        }
+        return mx;
+        
+    }
+******************************************************15****************************************************
+int f(int mid ,vector<int>& piles, int H){
+        int h =0;
+        for(auto it:piles){
+            h += (it + mid - 1) / mid;
+        }
+        
+        return h<=H; 
+    }
+    int minEatingSpeed(vector<int>& piles, int H) {
+        
+        int  l = 1;
+        int h = *max_element(piles.begin(),piles.end());
+        
+        while(l<=h){
+            int mid = (l+h)/2;
+            
+            if(f(mid,piles,H)){
+                h = mid-1;
+            }
+            else{
+                l = mid+1;
+            }
+        }
+        
+        return l;
+    }
+********************************************************end**************************************************
