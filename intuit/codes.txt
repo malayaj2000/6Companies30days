@@ -1,3 +1,268 @@
+**************************************************1***************************************************
+int minDifference(int arr[], int n)  { 
+	    // Your code goes here
+	    int sum = 0;
+	    for(int i = 0;i<n;i++) sum += arr[i];
+	    
+	    vector<vector<int>> dp(n+1,vector<int>(sum+1,0));
+	    for(int i = 0;i<n+1;i++) dp[i][0] = 1;
+	    
+	    
+	    for(int i =1;i<n+1;i++){
+	        for(int j = 1;j<sum+1;j++){
+	            if(arr[i-1]<=j){
+	                dp[i][j] = dp[i-1][j-arr[i-1]]|dp[i-1][j]; 
+	            }else{
+	                dp[i][j] = dp[i-1][j];
+	            }
+	        }
+	    }
+	    
+	    int ans = 0;
+	    for(int i = sum/2 ; i>=0 ;i--){
+	        if(dp[n][i]) {
+	            ans = sum - 2*i;
+	            break;
+	        }
+	    }
+	    return ans;
+	} 
+
+
+****************************************************2*************************************************
+using pii = pair<int,int> ;
+    bool isSafe(int i, int j, int row, int col)
+{
+    if (i >= 0 and i < row and j >= 0 and j < col)
+        return 1;
+    return 0;
+}
+
+int di[4] = {0, 0, -1, 1};
+int dj[4] = {-1, 1, 0, 0};
+
+    bool search(int i,int j,string w,int c,vector<vector<char>> &board,string temp,vector<vector<int>> &vis){
+        temp+=board[i][j];
+        vis[i][j] = 1;
+        if(c==w.size()){
+            if(temp == w) return 1;
+            else return 0;
+        }
+        
+        for(int dir = 0;dir<4;dir++){
+            int ni = i + di[dir];
+            int nj = j+ dj[dir];
+            if(isSafe(ni,nj,board.size(),board[0].size()) and !vis[ni][nj] and w[c]==board[ni][nj]){
+                if(search(ni,nj,w,c+1,board,temp,vis)) return 1;
+            }
+        }
+        
+        vis[i][j] = 0;
+        return 0;
+        
+        
+        
+        
+    }
+    bool isWordExist(vector<vector<char>>& board, string word) {
+        // Code here
+        char start  = word[0];
+        queue<pii> q;
+        int n = board.size();
+        int m = board[0].size();
+        
+        for(int i = 0;i<n;i++){
+            for(int j = 0;j<m;j++){
+                if(board[i][j]==start){
+                    q.push({i,j});
+                }
+            }
+        }
+        
+        while(!q.empty()){
+            int i = q.front().first;
+            int j = q.front().second;
+            q.pop();
+            int c = 0;
+            string temp = "";
+            vector<vector<int>> vis(n,vector<int>(m,0));
+            if(search(i,j,word,c+1,board,temp,vis)) return 1;
+        }
+        return  0;
+    }
+    ******************************************3**************************************************
+    ******************************************4**************************************************
+    public:
+    //Function to find the largest number after k swaps.
+    using ll = long long int;
+    
+    void solve(string s,int k,string &ans,int c){       
+        if(k==0){
+           
+            
+            return ;
+        }
+        
+        int mx = s[c];
+        int n = s.size();
+        for(int j = c+1;j<n;j++){
+            if(mx<s[j]){
+                mx = s[j];
+            }
+        }
+        
+        if(mx!=s[c]) k--;
+        
+        for(int j = n-1;j>=c;j--){
+            if(s[j]==mx){
+                swap(s[j],s[c]);
+                if(ans<s) ans = s;
+                solve(s,k,ans,c+1);
+                swap(s[j],s[c]);
+            }
+        }
+     
+    }
+    string findMaximumNum(string str, int k)
+    {
+       // code here.
+       string ans = str;
+       solve(str,k,ans,0);
+       return ans;
+    }
+    ******************************************5**************************************************
+    pair<bool,int> f(vector<int> &arr,int m,int k){
+        int c = 1;
+        int n = arr.size();
+        int currsum = 0;
+        for(int i = 0;i<n;i++){
+            if(currsum + arr[i]>m){
+                currsum = arr[i];
+                c++;
+            }else{
+                currsum +=arr[i];
+            }
+        }
+        
+        if(c<=k) return {1,c};
+        return {0,c};
+    }
+   int solve(vector<int> &arr,int k){
+        int h = accumulate(arr.begin(),arr.end(),0);
+        int l = *max_element(arr.begin(),arr.end());
+        
+        int ans = l;
+        while(l<=h){
+            int m = (l+h)/2;
+            auto res = f(arr,m,k);
+            if(res.first){
+                //cout<<m<<endl;
+                if(res.second == k) ans = m;
+                
+                h = m-1;
+            }else{
+                l = m+1;
+            }
+        }
+        
+        return ans;
+    }
+    int splitArray(vector<int>& nums, int m) {
+        return solve(nums,m);
+    }
+    ******************************************6**************************************************
+    int searchPeak(MountainArray &mountainArr,int n){
+        int l = 0;
+        int h = n-1;
+        int mid ;
+        while(l<=h){
+            mid = (l+h)/2;
+            int valmid = mountainArr.get(mid);
+            int valmid_prev = ((mid-1<0)?(INT_MIN):(mountainArr.get(mid-1)));
+            int valmid_next = ((mid+1<0)?(INT_MIN):(mountainArr.get(mid+1)));
+            if((mid==0|| valmid_prev<=valmid) and (mid==n-1 || valmid_next<=valmid)) return mid;
+            
+            else if(valmid_next<=valmid){
+                h = mid-1;
+            }else{
+                l = mid+1;
+            }
+        }
+        
+        return mid;
+    }
+    pair<bool,int> search(MountainArray &mountainArr,int l,int h,int t,bool flagL){
+        
+        int mid;
+        while(l<=h){
+            mid = (l+h)/2;
+            int midval = mountainArr.get(mid);
+            cout<<mid<<" "<<midval<<endl;
+            if(midval==t) return {1,mid};
+            if(flagL){
+                   if(midval<t){
+                     l = mid+1;
+                }else{
+                    h = mid-1;
+                }
+            }else{
+                if(midval<t){
+                      h = mid-1;
+                }else{
+                   l = mid+1;
+                }
+            }
+         
+        }
+        
+        return {0,0};
+    }
+    int findInMountainArray(int target, MountainArray &mountainArr) {
+        int n = mountainArr.length();
+        cout<<n<<endl;
+        int peakloc = searchPeak(mountainArr,n);
+        cout<<peakloc<<endl;
+        auto l = search(mountainArr,0,peakloc,target,1);
+        if(l.first) return l.second;
+        auto r = search(mountainArr,peakloc+1,n-1,target,0);
+        if(r.first) return r.second;
+        
+        return -1;
+        
+    }
+    ******************************************7**************************************************
+    bool f(int m,vector<int> &arr,int d){
+        int currd = 1;
+        int currW = 0;
+        int n = arr.size();
+        for(int i = 0;i<n;i++){
+            if(arr[i]+currW>m){
+                currd++;
+                currW = arr[i];
+            }else currW += arr[i];
+        }
+        
+        if(currd<=d) return 1;
+        return 0;
+    }
+    int shipWithinDays(vector<int>& weights, int days) {
+        int h = accumulate(weights.begin(),weights.end(),0);
+        int l = *max_element(weights.begin(),weights.end());
+        
+        int ans = h;
+        while(l<=h){
+            int mid = (l+h)/2;
+            
+            if(f(mid,weights,days)){
+                ans = mid;
+                h = mid-1;
+            }else{
+                l = mid+1;
+            }
+        }
+        
+        return ans;
+    }
 ******************************************************8*******************************************************
 
 *********************************************9****************************************************************
